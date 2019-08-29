@@ -1,53 +1,53 @@
 matrix:
   include:
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp27-cp27mu
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp27-cp27m
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp36-cp36m
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp37-cp37m
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp27-cp27mu
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp27-cp27m
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp36-cp36m
-      - sudo: required
-        language: python
-        os: linux
-        services:
-        - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp37-cp37m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp27-cp27mu
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp27-cp27m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp36-cp36m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp37-cp37m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp27-cp27mu
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp27-cp27m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp36-cp36m
+      #- sudo: required
+      #  language: python
+      #  os: linux
+      #  services:
+      #  - docker
+      #  env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp37-cp37m
       #- sudo: required
       #  language: python
       #  os: linux
@@ -60,6 +60,13 @@ matrix:
       - os: osx
         language: generic
         env: PYTHON=python3
+      - os: osx
+        language: generic
+        env: PYTHON=python3
+        before_install:
+            - brew update
+            - brew upgrade python
+            - python3 --version
 
 install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE; fi
