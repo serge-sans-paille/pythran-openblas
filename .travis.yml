@@ -60,6 +60,13 @@ matrix:
       - os: osx
         language: generic
         env: PYTHON=python3
+      - os: osx
+        language: generic
+        env: PYTHON=python3
+        before_install:
+            - brew update
+            - brew upgrade python
+            - python3 --version
 
 install:
     - if [ "$TRAVIS_OS_NAME" = "linux" ]; then docker pull $DOCKER_IMAGE; fi
