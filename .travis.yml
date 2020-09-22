@@ -29,7 +29,7 @@ matrix:
         os: linux
         services:
         - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp38-cp38m
+        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_x86_64 PLAT=manylinux1_x86_64 PYTHON_FLAVOR=cp38-cp38
       - sudo: required
         language: python
         os: linux
@@ -59,7 +59,7 @@ matrix:
         os: linux
         services:
         - docker
-        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp38-cp38m
+        env: DOCKER_IMAGE=quay.io/pypa/manylinux1_i686 PRE_CMD=linux32 PLAT=manylinux1_i686 PYTHON_FLAVOR=cp38-cp38
       #- sudo: required
       #  language: python
       #  os: linux
