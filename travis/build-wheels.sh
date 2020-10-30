@@ -3,6 +3,7 @@ set -e -x
 
 #targets="/opt/python/cp27-cp27mu/bin /opt/python/cp27-cp27m/bin /opt/python/cp36-cp36m/bin/ /opt/python/cp37-cp37m/bin/"
 targets="/opt/python/$1/bin"
+ls /opt/python -la
 
 # Compile wheels
 for PYBIN in $targets
