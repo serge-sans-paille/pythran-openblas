@@ -7,6 +7,7 @@ environment:
     #- PYTHON: "C:\\Python35-{platform}"
     - PYTHON: "C:\\Python36-%PLATFORM%"
     - PYTHON: "C:\\Python37-%PLATFORM%"
+    - PYTHON: "C:\\Python38-%PLATFORM%"
 
 install:
   # We need wheel installed to build wheels
