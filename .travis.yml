@@ -60,12 +60,23 @@ matrix:
       - os: osx
         language: generic
         env: PYTHON=python3
+        before_install:
+            - brew update
+            - brew install python@3.7
+            - python3 --version
       - os: osx
         language: generic
         env: PYTHON=python3
         before_install:
             - brew update
-            - brew upgrade python
+            - brew install python@3.8
+            - python3 --version
+      - os: osx
+        language: generic
+        env: PYTHON=python3
+        before_install:
+            - brew update
+            - brew install python@3.9
             - python3 --version
 
 install:
