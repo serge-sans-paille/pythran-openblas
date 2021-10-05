@@ -1,6 +1,6 @@
 name: Build wheels
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build_wheels:
@@ -8,8 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04, windows-2019, macOS-10.15]
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        os: [windows-2019, macOS-10.15]
+        python-version: [3.7]
 
     steps:
       - uses: actions/checkout@v2
@@ -28,7 +28,7 @@ jobs:
           python -m pip install wheel
 
       - name: Build wheels
-        run: python setup.py bdist_wheel
+        run: python setup.py bdist_wheel --universal
 
       - name: Test non-windows wheels
         if: matrix.os != 'windows-2019'
