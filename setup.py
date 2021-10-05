@@ -1,10 +1,13 @@
 import os
-from setuptools import setup, Distribution
-from distutils.command.build_clib import build_clib
+from setuptools import setup, Extension
+from setuptools.command.build_clib import build_clib
 from sys import platform
+from shutil import copyfile, copytree
+import glob
 
 OpenBLASVersion = '0.3.6'
 name = 'pythran_openblas'
+
 
 class MyBuildCLib(build_clib):
     def run(self):
@@ -39,7 +42,9 @@ class MyBuildCLib(build_clib):
 
         cwd = os.getcwd()
         os.chdir(self.build_temp)
-
+        # this is clumsy <3
+        guess_libplat = glob.glob(os.path.join(cwd, 'build', 'lib*'))[0]
+        install_prefix = os.path.join(guess_libplat, 'pythran_openblas')
         subprocess.check_call(["cmake",
                                '-G', generator,
                                '-DCMAKE_BUILD_TYPE=Release',
@@ -48,9 +53,13 @@ class MyBuildCLib(build_clib):
                                '-DNO_LAPACK=1',
                                '-DBUILD_SHARED_LIBS=OFF',
                                os.path.join(cwd, 'OpenBLAS-{version}'.format(version=OpenBLASVersion)),
-                               "-DCMAKE_INSTALL_PREFIX="+os.path.join(cwd, 'build', 'lib', name)])
+                               "-DCMAKE_INSTALL_PREFIX="+install_prefix])
         subprocess.check_call(builder)
         subprocess.check_call(["cmake", "--build", '.', '--target', 'install'])
+
+        guess_libblas = glob.glob(os.path.join(install_prefix, 'lib*', '*openblas*'))[0]
+        target_libblas = guess_libblas.replace('openblas', 'pythran_openblas')
+        copyfile(guess_libblas, os.path.basename(target_libblas))
 
         os.chdir(cwd)
 
@@ -64,5 +73,6 @@ setup(name=name,
       author_email='serge.guelton@telecom-bretagne.eu',
       url='https://github.com/serge-sans-paille/' + name.replace('_', '-'),
       license="BSD 3-Clause",
+      ext_modules=[Extension("pythran_openblas.placeholder", ['pythran_openblas/placeholder.c'])],
       cmdclass={'build_clib': MyBuildCLib})
 
