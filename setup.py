@@ -1,6 +1,14 @@
 import os
 from setuptools import setup, Extension
 from setuptools.command.build_clib import build_clib
+from wheel.bdist_wheel import bdist_wheel as bdist_wheel_
+
+
+class bdist_wheel(bdist_wheel_):
+    def get_tag(self):
+        _, _, plat_name = bdist_wheel_.get_tag(self)
+        return 'py2.py3', 'none', plat_name
+
 from sys import platform
 from shutil import copyfile, copytree
 import glob
@@ -74,5 +82,5 @@ setup(name=name,
       url='https://github.com/serge-sans-paille/' + name.replace('_', '-'),
       license="BSD 3-Clause",
       ext_modules=[Extension("pythran_openblas.placeholder", ['pythran_openblas/placeholder.c'])],
-      cmdclass={'build_clib': MyBuildCLib})
+      cmdclass={'build_clib': MyBuildCLib,'bdist_wheel': bdist_wheel})
 
