@@ -55,11 +55,11 @@ class MyBuildCLib(build_clib):
         if platform == "win32":
             dynamic_arch = 0
             generator = "Visual Studio 14 Win64"
-            builder = ["cmake", "--build", ".", "USE_THREAD=0", "USE_OPENMP=0"]
+            builder = ["cmake", "--build", "."]
         else:
             dynamic_arch = 1
             generator = "Unix Makefiles"
-            builder = ["make", "-j2", "USE_THREAD=0", "USE_OPENMP=0"]
+            builder = ["make", "-j"]
 
         try:
             os.makedirs(self.build_temp)
