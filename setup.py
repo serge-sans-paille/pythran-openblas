@@ -14,7 +14,7 @@ from shutil import copyfile, copytree
 import glob
 
 OpenBLASVersion = '0.3.6'
-name = 'pythran_openblas'
+name = 'python_openblas_build'
 
 
 class MyBuildCLib(build_clib):
@@ -29,7 +29,25 @@ class MyBuildCLib(build_clib):
         import tarfile
         print("Extracting OpenBLAS version {}".format(OpenBLASVersion))
         with tarfile.open(fname, "r:gz") as tar:
-            tar.extractall()
+            def is_within_directory(directory, target):
+
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+
+                return prefix == abs_directory
+
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+
+                tar.extractall(path, members, numeric_owner=numeric_owner)
+
+            safe_extract(tar)
 
         import subprocess
         print("Building OpenBLAS version {}".format(OpenBLASVersion))
@@ -37,11 +55,11 @@ class MyBuildCLib(build_clib):
         if platform == "win32":
             dynamic_arch = 0
             generator = "Visual Studio 14 Win64"
-            builder = ["cmake", "--build", '.']
+            builder = ["cmake", "--build", ".", "USE_THREAD=0", "USE_OPENMP=0"]
         else:
             dynamic_arch = 1
             generator = "Unix Makefiles"
-            builder = ['make', '-j2']
+            builder = ["make", "-j2", "USE_THREAD=0", "USE_OPENMP=0"]
 
         try:
             os.makedirs(self.build_temp)
@@ -52,7 +70,7 @@ class MyBuildCLib(build_clib):
         os.chdir(self.build_temp)
         # this is clumsy <3
         guess_libplat = glob.glob(os.path.join(cwd, 'build', 'lib*'))[0]
-        install_prefix = os.path.join(guess_libplat, 'pythran_openblas')
+        install_prefix = os.path.join(guess_libplat, 'python_openblas_build')
         subprocess.check_call(["cmake",
                                '-G', generator,
                                '-DCMAKE_BUILD_TYPE=Release',
@@ -66,7 +84,7 @@ class MyBuildCLib(build_clib):
         subprocess.check_call(["cmake", "--build", '.', '--target', 'install'])
 
         guess_libblas = glob.glob(os.path.join(install_prefix, 'lib*', '*openblas*'))[0]
-        target_libblas = guess_libblas.replace('openblas', 'pythran_openblas')
+        target_libblas = guess_libblas.replace('openblas', 'python_openblas_build')
         copyfile(guess_libblas, os.path.basename(target_libblas))
 
         os.chdir(cwd)
@@ -77,10 +95,10 @@ setup(name=name,
       libraries=[(name, {'sources': []})],
       description='Python packaging of OpenBLAS',
       long_description='Binary distribution of OpenBLAS static libraries',
-      author='serge-sans-paille',
-      author_email='serge.guelton@telecom-bretagne.eu',
-      url='https://github.com/serge-sans-paille/' + name.replace('_', '-'),
+      author='khaled-besrour',
+      author_email='khaledbesrour2@gmail.com',
+      url='https://github.com/kbesrour-ma/' + name.replace('_', '-'),
       license="BSD 3-Clause",
-      ext_modules=[Extension("pythran_openblas.placeholder", ['pythran_openblas/placeholder.c'])],
+      ext_modules=[Extension("python_openblas_build.placeholder", ['python_openblas_build/placeholder.c'])],
       cmdclass={'build_clib': MyBuildCLib,'bdist_wheel': bdist_wheel})
 

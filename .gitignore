@@ -1,0 +1,6 @@
+build/
+OpenBLAS-*/
+python_openblas_build.egg-info/
+venv/
+.idea/
+*.tar.gz

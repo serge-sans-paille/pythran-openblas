@@ -1,4 +1,4 @@
-pythran-openblas
+python-openblas-build
 ================
 
 This repo provides an automatic way to generate OpenBLAS wheels for Linux, OSX and Windows, thanks to Appveyor and Travis-CI.
@@ -8,7 +8,7 @@ The wheels provide **static archive** of OpenBLAS, and a dummy package with a fe
 
 .. code-block:: python
 
-    >>> import pythran_openblas as openblas
+    >>> import python_openblas_build as openblas
     >>> openblas.static_library
     libopenblas.a
     >>> openblas.include_dirs
