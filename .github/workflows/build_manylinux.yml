@@ -1,0 +1,85 @@
+name: Build Unix
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read # to fetch code (actions/checkout)
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    container:
+      image: quay.io/pypa/manylinux2014_x86_64:latest
+    environment: pypi
+
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+
+    env:
+      ACTIVE_CCACHE: 1
+      PY_TEST_TOKEN: ${{ secrets.TEST_PYPI_API_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install Dependencies
+        run: |
+            yum install -y cmake ccache
+
+      - name: Compilation cache
+        uses: actions/cache@v3
+        with:
+          path: ~/.ccache
+          # We include the commit sha in the cache key, as new cache entries are
+          # only created if there is no existing entry for the key yet.
+          # GNU make and cmake call the compilers differently. It looks like
+          # that causes the cache to mismatch. Keep the ccache for both build
+          # tools separate to avoid polluting each other.
+          key: ccache-${{ runner.os }}-${{ matrix.build }}-${{ github.ref }}
+          # Restore a matching ccache cache entry. Prefer same branch and same Fortran compiler.
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ matrix.build }}-${{ github.ref }}
+            ccache-${{ runner.os }}-${{ matrix.build }}
+
+      - name: Configure ccache
+        run: |
+          echo "/usr/lib/ccache" >> $GITHUB_PATH
+          # Limit the maximum size and switch on compression to avoid exceeding the total disk or cache quota (5 GB).
+          test -d ~/.ccache || mkdir -p ~/.ccache
+          echo "max_size = 300M" > ~/.ccache/ccache.conf
+          echo "compression = true" >> ~/.ccache/ccache.conf
+          ccache -s
+
+      - name: Install pypa/build
+        run: |
+          python3.8 -m pip install build twine cibuildwheel
+
+      - name: Build a binary wheel and a source tarball
+        if: github.ref != 'refs/heads/master'
+        run: |
+          python3.8 setup.py bdist_wheel --plat-name=manylinux2014_x86_64 
+
+      - name: Build wheels
+        if: github.ref == 'refs/heads/master'
+        uses: pypa/cibuildwheel@v2.12.3
+
+      - name: Publish distribution 📦 to Test PyPI
+        if: github.ref != 'refs/heads/master'
+        run: |
+          python3.8 -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi --skip-existing dist/*
+
+      - name: Publish distribution 📦 to PyPI
+        if: github.ref == 'refs/heads/master'
+        run: |
+          python3.8 -m twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --repository  pypi --skip-existing dist/*
+
+      - name: Show ccache status
+        continue-on-error: true
+        run: ccache -s
