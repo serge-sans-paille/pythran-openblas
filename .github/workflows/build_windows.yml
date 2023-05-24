@@ -99,7 +99,7 @@ jobs:
       - name: Build a binary wheel and a source tarball
         if: github.ref != 'refs/heads/master'
         run: |
-          python -m build --wheel --outdir dist/
+          python -m build --wheel --outdir wheelhouse/
 
       - name: Build wheels
         if: github.ref == 'refs/heads/master'
@@ -108,12 +108,12 @@ jobs:
       - name: Publish distribution 📦 to Test PyPI
         if: github.ref != 'refs/heads/master'
         run: |
-          python -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi --skip-existing dist/*
+          python -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi --skip-existing wheelhouse/*
 
       - name: Publish distribution 📦 to PyPI
         if: github.ref == 'refs/heads/master'
         run: |
-          python -m twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --repository  pypi --skip-existing dist/*
+          python -m twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --repository  pypi --skip-existing wheelhouse/*
 
       - name: Show ccache status
         continue-on-error: true
