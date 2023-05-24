@@ -17,6 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python-version: [ 3.8 ]
         os: [ubuntu-latest]
 
     env:
@@ -45,6 +46,11 @@ jobs:
           restore-keys: |
             ccache-${{ runner.os }}-${{ matrix.build }}-${{ github.ref }}
             ccache-${{ runner.os }}-${{ matrix.build }}
+            
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
 
       - name: Configure ccache
         run: |
@@ -57,28 +63,28 @@ jobs:
 
       - name: Install pypa/build
         run: |
-          python3.8 -m pip install build twine cibuildwheel==2.12.3
+          python -m pip install build twine cibuildwheel==2.12.3
 
       - name: Build a binary wheel and a source tarball
         if: github.ref != 'refs/heads/master'
         run: |
           export CIBW_BUILD=cp36-manylinux_x86_64
-          python3.8 -m cibuildwheel --output-dir wheelhouse
+          python -m cibuildwheel --output-dir wheelhouse
 
       - name: Build wheels
         if: github.ref == 'refs/heads/master'
         run: |
-          python3.8 -m cibuildwheel --output-dir wheelhouse
+          python -m cibuildwheel --output-dir wheelhouse
 
       - name: Publish distribution 📦 to Test PyPI
         if: github.ref != 'refs/heads/master'
         run: |
-          python3.8 -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi --skip-existing dist/*
+          python -m twine upload -u __token__ -p ${{ secrets.TEST_PYPI_API_TOKEN }} --repository testpypi --skip-existing dist/*
 
       - name: Publish distribution 📦 to PyPI
         if: github.ref == 'refs/heads/master'
         run: |
-          python3.8 -m twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --repository  pypi --skip-existing dist/*
+          python -m twine upload -u __token__ -p ${{ secrets.PYPI_API_TOKEN }} --repository  pypi --skip-existing dist/*
 
       - name: Show ccache status
         continue-on-error: true
