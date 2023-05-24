@@ -59,7 +59,7 @@ jobs:
 
       - name: Install pypa/build
         run: |
-          python3.8 -m pip install build twine cibuildwheel
+          python3.8 -m pip install build twine cibuildwheel==2.12.3
 
       - name: Build a binary wheel and a source tarball
         if: github.ref != 'refs/heads/master'
@@ -68,7 +68,8 @@ jobs:
 
       - name: Build wheels
         if: github.ref == 'refs/heads/master'
-        uses: pypa/cibuildwheel@v2.12.3
+        run: |
+          python3.8 -m cibuildwheel --output-dir wheelhouse
 
       - name: Publish distribution 📦 to Test PyPI
         if: github.ref != 'refs/heads/master'
