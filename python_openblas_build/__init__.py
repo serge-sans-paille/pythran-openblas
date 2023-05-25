@@ -1,22 +1,8 @@
 import os
-import sys
-
-if sys.platform == "win32":
-    static_library = "openblas_64.lib"
-else:
-    static_library = "libopenblas.a"
+import glob
 
 __dir__ = os.path.dirname(__file__)
-if os.path.isdir(os.path.join(__dir__, 'include', 'openblas')):
-    include_dirs = os.path.join(__dir__, 'include', 'openblas')
-elif os.path.isdir(os.path.join(__dir__, 'include', 'openblas64')):
-    include_dirs = os.path.join(__dir__, 'include', 'openblas64')
-else:
-    raise RuntimeError("Unsupported include layout")
 
-if os.path.isdir(os.path.join(__dir__, 'lib')):
-    library_dir = os.path.join(__dir__, 'lib')
-elif os.path.isdir(os.path.join(__dir__, 'lib64')):
-    library_dir = os.path.join(__dir__, 'lib64')
-else:
-    raise RuntimeError("Unsupported library layout")
+static_library = os.path.basename(glob.glob("lib*/*.*")[0])
+include_dirs = os.path.join(__dir__,glob.glob("include/openblas*")[0])
+library_dir = os.path.join(__dir__, glob.glob("lib*")[0])
